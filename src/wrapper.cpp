@@ -33,32 +33,18 @@ int send_broadcast(void* data, int len)
 
 int Wrapper::send_unicast(Reciever reciever, void* data, int len)
 {
-    
-    typedef std::list<Reciever> rec;
-    rec::iterator it = std::lower_bound(recievers.begin(), recievers.end(), reciever,
-    [](Reciever left, Reciever right) -> bool {
-        uint8_t* left_arr = left.getMac();
-        uint8_t* right_arr = right.getMac();
-        for (int i = 0; i < 6; i++) {
-            if (left_arr[i] != right_arr[i])
-                return left_arr[i] < right_arr[i];
-        }
-        return 1;
-    });
-    recievers.insert(it, reciever);
-    esp_now_add_peer();
+
 }
 
 
-int send_broadcast(void* data, int len)
+int send_broadcast(const void* data, int len)
 {
-    if(esp_now_send(broadcast_mac, &data, 4)  !=ESP_OK){
-    Serial.println("send fail");
-    return;
+    if (esp_now_send(broadcast_mac, (const uint8_t*)data, len) != ESP_OK) {
+        Serial.println("send fail");
+        return;
+    }
 }
 
-
-}
 int send_unicast(Reciever reciever, void* data, int len);
 int add_recieve_function(recieve_callback callback);
 int delete_recieve_function(recieve_callback callback);

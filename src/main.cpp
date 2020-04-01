@@ -1,5 +1,6 @@
 #include <esp_now.h>
 #include <WiFi.h>
+#include <HardwareSerial.cpp>
 
 uint8_t mac[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 

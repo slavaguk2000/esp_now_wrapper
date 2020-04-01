@@ -1,8 +1,5 @@
-#if !defined(WRAPPER)
-#define WRAPPER
 #include "reciever.h"
 #include <list>
-#include <WiFi.h>
 
 typedef void (*recieve_callback)(const uint8_t *mac_addr, const uint8_t *data, int data_len);
 
@@ -26,6 +23,3 @@ private:
     uint8_t key[16];
     std::list<Reciever> recievers;
 }
-
-
-#endif // WRAPPER
