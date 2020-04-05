@@ -2,10 +2,12 @@
 #include "wrapper.h"
 #include <list>
 #include <iostream>
+#include <WiFi.h>
+#include <algorithm>
 
 const uint8_t broadcast_mac[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
-Wrapper::Wrapper()//broadcast_peer is embed directly without add in recieveList
+Wrapper::Wrapper()
 {
     WiFi.mode(WIFI_STA);
     esp_now_init();
@@ -25,32 +27,59 @@ Wrapper::~Wrapper()//should be deleted all recivers before deinit?
     esp_now_deinit();
 }
 
-int send_broadcast(void* data, int len)
-{
 
+int Wrapper::send_unicast(Reciever reciever, const void* data, int len)
+{
+    return esp_now_send(reciever.getMac(), (const uint8_t*)data, len);
+}
+
+int Wrapper::send_unicast(int index, void* data, int len)
+{
+    Reciever reciever = getReciverById(index);
+    return send_unicast(reciever, data, len);
 }
 
 
-int Wrapper::send_unicast(Reciever reciever, void* data, int len)
+int Wrapper::send_broadcast(const void* data, int len)
 {
-
+    return esp_now_send(broadcast_mac, (const uint8_t*)data, len);
 }
 
-
-int send_broadcast(const void* data, int len)
+int Wrapper::add_recieve_function(recieve_callback callback)
 {
-    if (esp_now_send(broadcast_mac, (const uint8_t*)data, len) != ESP_OK) {
-        Serial.println("send fail");
-        return;
-    }
+    return esp_now_register_recv_cb(callback);
+}
+int Wrapper::delete_recieve_function() 
+{
+    return esp_now_unregister_recv_cb();
 }
 
-int send_unicast(Reciever reciever, void* data, int len);
-int add_recieve_function(recieve_callback callback);
-int delete_recieve_function(recieve_callback callback);
-int add_reciever(Reciever reciever);
-int delete_reciever(Reciever reciever);
-int delete_reciever(uint8_t index);
-int getRecieversCount();
-int contains(uint8_t index);    
+int Wrapper::getRecieversCount()
+{
+    return recievers.size();
+}
+
+Reciever Wrapper::getReciverById(uint8_t index)
+{
+    std::list<Reciever>::iterator it = std::find_if(recievers.begin(), recievers.end(),
+        [index](Reciever reciever) {return reciever.getId() == index; });
+    return *it;
+}
+
+bool Wrapper::contains(uint8_t index)
+{
+    auto it = std::find_if(recievers.begin(), recievers.end(), 
+        [index](Reciever reciever) {return reciever.getId() == index;});
+    return it != recievers.end();
+}
+
+uint8_t* Wrapper::getMyMac()
+{
+    return myMac;
+}
+
+uint8_t* Wrapper::getMyKey()
+{
+    return myKey;
+}
 
