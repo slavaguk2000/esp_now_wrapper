@@ -1,10 +1,10 @@
 #include "reciever.h"
+#include "wrapper.h"
 #include <stdio.h>
 #include <string.h>
-#include "reciever.h"
 #include <esp_now.h>
 
-void init(esp_now_peer_info_t& info, uint8_t* mac, void* key, int channel = 0, bool encrypt = false, void *priv = nullptr)
+void init(esp_now_peer_info_t& info, const uint8_t* mac, const void* key, const int channel = 0, const bool encrypt = false, void *priv = nullptr)
 {
     memcpy(info.peer_addr, mac, 6);
     memcpy(info.lmk, key, 16);
@@ -14,34 +14,46 @@ void init(esp_now_peer_info_t& info, uint8_t* mac, void* key, int channel = 0, b
     info.ifidx = ESP_IF_WIFI_STA;
 }
 
-Reciever::Reciever(uint8_t* mac, void* key, int channel, bool encrypt, void *priv)
+Reciever::Reciever(const uint8_t* mac, const void* key, const int channel, const bool encrypt, void *priv)
 {
-    id = next_id++;
     init(info, mac, key, channel, encrypt, priv);
 }
 
-Reciever::Reciever(uint8_t* mac, int channel)
+esp_now_peer_info Reciever::get_info() const 
 {
-    id = next_id++;
+    return info;
+}
+
+Reciever::Reciever(const uint8_t* mac, const int channel)
+{
     uint8_t key[16] = { 0 };
     init(info, mac, key, channel);
 }
 
-int Reciever::getId()
+const uint8_t* Reciever::get_mac() const 
 {
-    return id;
+    return info.peer_addr;
 }
 
-uint8_t* Reciever::getMac(){
-    return mac;
+const void* Reciever::get_key() const 
+{
+    return info.lmk;
 }
 
-void* Reciever::getKey()
+int Reciever::set_key(const void* k)
 {
-    return key;
+    if (!info.encrypt) return ESP_ERR_INVALID_STATE;
+    memcpy(info.lmk, k, 16);
+    return Wrapper::get_instance()->modify_reciever(this);
 }
 
-int Reciever::getChannel()
+const int Reciever::get_channel() const 
 {
-    return channel;
+    return info.channel;
+}
+
+int Reciever::set_channel(const int ch)
+{
+    info.channel = ch;
+    return Wrapper::get_instance()->modify_reciever(this);
 }

@@ -1,70 +1,59 @@
-//#include <esp_now.h>
-//#include <WiFi.h>
-//#include <HardwareSerial.cpp>
-//
-//uint8_t mac[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-//
-//void send(const uint8_t *mac_addr, esp_now_send_status_t status)
-//{
-//    Serial.println(status);
-//}
-//
-//
-//void setup()
-//{ 
-//
-//    WiFi.mode(WIFI_STA);
-//    Serial.begin(115200);
-//    WiFi.setTxPower(WIFI_POWER_2dBm);
-//    
-//    if (esp_now_init() != ESP_OK) 
-//    Serial.println("init fail");  
-//    esp_now_peer_info_t broadcast_peer = {
-//        {0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-//        {1, 2, 3, 4},
-//        0,
-//        ESP_IF_WIFI_STA,                 
-//        false, 
-//        nullptr
-//    };
-//
-//   if(esp_now_add_peer(&broadcast_peer) != ESP_OK){
-//        Serial.println("add peer fail");
-//    }
-//    esp_now_peer_info_t peer = {
-//        {0x24, 0x6F, 0x28, 0x9D, 0x42, 0x14},
-//        {1, 2, 3, 4},
-//        0,
-//        ESP_IF_WIFI_STA,                 
-//        false, 
-//        nullptr
-//    };
-//
-//  if(esp_now_add_peer(&peer) != ESP_OK){
-//    Serial.println("add peer fail");
-//  }
-//   if (esp_now_register_send_cb(&send) != 0) 
-//  Serial.println("ERRRRROOROROROOROR"); 
-//}
-//
-//
-//void loop() {
-//
-//    uint8_t data = 4;
-//    if(esp_now_send(mac, &data, 4)  !=ESP_OK){
-//        Serial.println("send fail");
-//        return;
-//    }
-//
-//    delay(1000);
-//}
+#include <esp_now.h>
+#include <WiFi.h>
+uint8_t my_mac1[] = {0x24, 0x6F, 0x28, 0x9D, 0x62, 0xFC};
+uint8_t my_mac2[] = {0x24, 0x6F, 0x28, 0x9D, 0x42, 0x14};
+uint8_t mac[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
-#include<iostream>
-#include"reciever.h"
+#include "initializer.h"
 #include "wrapper.h"
-int main() {
-	uint8_t mac[] = { 1,2,3,4,5,6 };
-	Reciever reciever = Reciever(mac);
-	Wrapper wrapper = Wrapper();
-	wrapper.contains(0);
+
+void setup_send()
+{ 
+    Serial.begin(9600);
+//    Initialiser::initialise();
+    
+}
+
+void loop_send() {
+    char h_str[] = "HEllo, WOrld";
+    Serial.println(WR->send_broadcast(h_str, sizeof(h_str)));
+    delay(1000);
+}
+
+void get_message(const uint8_t *mac_addr, const uint8_t *data, int data_len)
+{
+    for(int i = 0; i < 6; i ++)
+    {
+        Serial.print(mac_addr[i]);
+        Serial.print("-");
+    }
+    Serial.print(": ");
+    for(int i = 0; i < data_len; i++)
+    {
+        Serial.print((char)data[i]);
+    }
+}
+
+void setup_recieve()
+{ 
+    Serial.begin(9600);
+    WR->add_recieve_function(get_message);
+//    Initialiser::initialise();
+    
+}
+void loop_recieve() {
+    delay(5000);
+    Serial.println("5 sec");
+}
+
+void setup()
+{
+    // setup_send();
+    setup_recieve();
+}
+
+void loop()
+{
+    // loop_send();
+    loop_recieve();
 }
