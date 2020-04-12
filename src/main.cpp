@@ -16,7 +16,7 @@ void setup_send()
 
 void loop_send() {
     char h_str[] = "HEllo, WOrld";
-    Serial.println(WR->send_broadcast(h_str, sizeof(h_str)));
+    Serial.println(WR>send_broadcast(h_str, sizeof(h_str)));
     delay(1000);
 }
 
@@ -37,7 +37,7 @@ void get_message(const uint8_t *mac_addr, const uint8_t *data, int data_len)
 void setup_recieve()
 { 
     Serial.begin(9600);
-    WR->add_recieve_function(get_message);
+    WR>add_recieve_function(get_message);
 //    Initialiser::initialise();
     
 }
