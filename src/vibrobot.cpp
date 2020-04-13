@@ -7,6 +7,8 @@
 
 #define PIN 26
 
+const int del_time = 2000;
+
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(4, PIN, NEO_GRB + NEO_KHZ800);
@@ -38,12 +40,14 @@ void Vibrobot::recieve_foreign_command(const uint8_t *mac_addr, const uint8_t *d
         i = data[0];
         red = data[1];
         green = data[2];
-        blue = data[3];           
+        blue = data[3];     
+        counter = del_time;      
     }
 }
 
 void Vibrobot::set_leds()
 {
+    send_leds_changed();
     pixels.setPixelColor(i % 4, pixels.Color(red, 0, 0)); 
 	pixels.setPixelColor((i-1) % 4, pixels.Color(0, green, 0));
 	pixels.setPixelColor((i-2) % 4, pixels.Color(0, 0, blue));
@@ -66,11 +70,11 @@ void Vibrobot::setup()
 
 void Vibrobot::loop()
 {
-    if (!(counter%2000)){
+    if (counter >= del_time){
         counter = 0;
         if (is_client){
             is_client--;
-            if (is_client < 0) is_client = 0;
+            if (is_client < 0) is_client = false;
         }
         else{
             i++;
@@ -80,10 +84,9 @@ void Vibrobot::loop()
             if(i > 120) {
                 reset_demo();
             }
-            send_leds_changed();
-        }    
-    }
-    set_leds();
+        }  
+        set_leds();  
+    }    
     counter++;
     delay(1);
 }
