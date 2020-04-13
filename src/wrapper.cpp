@@ -21,6 +21,7 @@ Wrapper::Wrapper()
         nullptr
     };
     esp_now_add_peer(&broadcast_peer);
+    esp_read_mac(my_mac, ESP_MAC_WIFI_STA);
 }
 
 Wrapper::~Wrapper()//should be deleted all recivers before deinit?
