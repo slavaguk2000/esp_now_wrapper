@@ -1,14 +1,18 @@
-#include "vibrobot.h"
+#include "joystick.h"
+#include "manipulator.h"
 
-extern Vibrobot vb;
+extern Joystick js;
+extern Manipulator mn;
 
 void setup()
 {
-    vb.setup();
+    js.setup();
+    //mn.setup();
 }
 
 void loop()
 {
-    vb.loop();
+    js.loop();
+    //mn.loop();
 }
 
