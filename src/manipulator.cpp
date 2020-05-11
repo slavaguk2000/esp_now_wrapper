@@ -34,7 +34,6 @@ void Manipulator::recieve_foreign_command(const uint8_t *mac_addr, const uint8_t
 
 void Manipulator::setup()
 {
-    pinMode(LED_BUILTIN, OUTPUT);
     WR->add_recieve_function(recieve_data);
     srx.attach(SERVOX_PIN);
     sry.attach(SERVOY_PIN);
