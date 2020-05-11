@@ -1,6 +1,4 @@
 #include "vibrobot.h"
-#include <esp_now.h>
-#include <WiFi.h>
 #include "wrapper.h"
 
 #include <Adafruit_NeoPixel.h>

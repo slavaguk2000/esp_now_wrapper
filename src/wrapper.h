@@ -1,6 +1,8 @@
 #ifndef WRAPPER
 #define WRAPPER
 
+#include <esp_now.h>
+#include <WiFi.h>
 #include "reciever.h"
 #include <map>
 
